@@ -174,6 +174,7 @@ public class StepDefinitions {
         //Press the enter key to upload a file
         robot.keyPress(KeyEvent.VK_ENTER);
         robot.keyRelease(KeyEvent.VK_ENTER);
+
         Thread.sleep(2000);
         System.out.println("Image uploaded! \n");
     }
@@ -256,7 +257,18 @@ public class StepDefinitions {
 
     @Then("^the email should be sent to the recipient with both image attachments$")
     public void emailBeSentWithBothImageAttachments() throws Throwable {
-        emailBeSentWithImageAttachment();
+        System.out.println("Waiting for email confirmation appears...");
+
+        //If the view message button appears, then the email has been sent
+        WebElement viewMessage = (new WebDriverWait(driver, 20))
+                .until(ExpectedConditions.elementToBeClickable(By.id(VIEW_MESSAGE)));
+        System.out.print("Email confirmation appears!\n");
+
+        viewMessage.click();
+
+        System.out.println("Clicking delete button.");
+        Assert.assertTrue(driver.findElements(By.tagName("img")).size() == 2);
+        assertInInitialState();
     }
 
     @Then("^the email should be sent to the recipient without the image attachment$")

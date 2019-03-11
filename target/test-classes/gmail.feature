@@ -29,7 +29,7 @@ Feature: Send email with image attachment
   #Error Flow
   Scenario: Send the email to an invalid address after adding an image attachment
     Given I am a user with an existing account
-    And I am on the “compose new message” page with the recipient email and subject specified, but the recipient email is invalid
+    And I am on the "compose new message" page with the recipient email and subject specified, but the recipient email is invalid
     When I press "attach files" and select an image and I press "open"
     And I press "Send"
     Then an error dialog should be popped up indicating that the email address is invalid
