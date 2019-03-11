@@ -26,11 +26,8 @@ public class StepDefinitions {
     private final String Valid_GMAIL = "barry.angela111@gmail.com";
     private final String Invalid_GMAIL = "barry.angela111";
     private final String VIEW_MESSAGE = "link_vsm";
-
-    private final String RECEIVER = "borui.tao@mail.mcgill.ca";
+    private final String RECIPIENT = "borui.tao@mail.mcgill.ca";
     private final String SUBJECT = "ecse428";
-
-    private final String PATH_TO_IMAGE = "/Users/toukashiwaakira/Desktop/img.jpg";
 
     private boolean first = true;
     // Given
@@ -39,34 +36,36 @@ public class StepDefinitions {
         setupSeleniumWebDrivers();
         goTo(USER_URL);
 
-        WebElement emailEle = driver.findElement(By.id("identifierId"));
+        WebElement emailElement = driver.findElement(By.id("identifierId"));
 
-        if (emailEle != null) {
+        //If the user has not logged in
+        if (emailElement != null) {
             System.out.println("Please login...");
-            emailEle.sendKeys(Valid_GMAIL);
-            WebElement nextButton = driver.findElement(By.className("CwaK9"));
-            nextButton.click();
+            emailElement.sendKeys(Valid_GMAIL);
 
+            //click on "next"
+            WebElement nextButtonEmail = driver.findElement(By.className("CwaK9"));
+            nextButtonEmail.click();
+
+            //wait for the password input box appears and enter the password
             WebDriverWait wait = new WebDriverWait(driver, 20);
             wait.until(ExpectedConditions.presenceOfElementLocated(By.id("password")));
-
             WebElement password = driver.findElement(By.xpath("//input[@name='password']"));
-
             System.out.println("Entering the password...");
             password.sendKeys("CS421g11");
-
             System.out.println("Password entered!");
+
+            //click on the "next" button
             WebElement nextButtonPassword = driver.findElement(By.className("CwaK9"));
             nextButtonPassword.click();
         } else {
+            //If the user has logged in
             System.out.println("Already logged in");
         }
     }
 
     @And("I am on the \"compose new message\" page with the recipient email and subject specified")
     public void andIamOnComposeNewMessagePage() throws Throwable {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-
         System.out.println("Attempting to find the compose button.. ");
         WebElement composeButton = (new WebDriverWait(driver, 10))
                 .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@role='button'][@tabindex='0'][@gh='cm']")));
@@ -74,35 +73,35 @@ public class StepDefinitions {
         System.out.println("compose button found! ");
         composeButton.click();
 
-        System.out.println("Attempting to specify the receiver.. ");
+        //use TAB key from the keyboard to enter the recipient email
+        System.out.println("Attempting to specify the recipient.. ");
         Robot robot = new Robot();
         robot.keyPress(KeyEvent.VK_TAB);
         robot.keyRelease(KeyEvent.VK_TAB);
         WebElement receiver = driver.findElement(By.xpath("//textarea[@rows='1'][@name='to'][@role='combobox']"));
+        System.out.println("recipient found!");
+        receiver.sendKeys(RECIPIENT);
+        System.out.println("recipient sent!");
 
-        System.out.println("Receiver found!");
+        //verify that the recipient email has been entered
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.textToBePresentInElementValue(receiver, RECIPIENT));
+        System.out.println("recipient specified!");
 
-        receiver.sendKeys(RECEIVER);
-        System.out.println("Receiver sent!");
-
-        wait.until(ExpectedConditions.textToBePresentInElementValue(receiver, RECEIVER));
-        System.out.println("Receiver Specified!");
-
+        //enter the subject of the email
         System.out.println("Attempting to specify the subject.. ");
         WebElement subject = (wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@name='subjectbox'][@placeholder='Subject']"))));
         System.out.println("Subject found!");
-
         subject.sendKeys(SUBJECT);
         System.out.println("Subject sent!");
 
+        //verify that the subject of the email has been entered
         wait.until(ExpectedConditions.textToBePresentInElementValue(subject, SUBJECT));
         System.out.println("Subject Specified!\n");
     }
 
     @And("I am on the \"compose new message\" page with the recipient email and subject specified, but the recipient email is invalid")
     public void andIamOnComposeNewMessagePageInvalidEmail() throws Throwable {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-
         System.out.println("Attempting to find the compose button.. ");
         WebElement composeButton = (new WebDriverWait(driver, 10))
                 .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@role='button'][@tabindex='0'][@gh='cm']")));
@@ -110,27 +109,32 @@ public class StepDefinitions {
         System.out.println("compose button found! ");
         composeButton.click();
 
-        System.out.println("Attempting to specify the receiver.. ");
+        //use TAB key from the keyboard to enter the recipient email
+        System.out.println("Attempting to specify the recipient.. ");
         Robot robot = new Robot();
         robot.keyPress(KeyEvent.VK_TAB);
         robot.keyRelease(KeyEvent.VK_TAB);
         WebElement receiver = driver.findElement(By.xpath("//textarea[@rows='1'][@name='to'][@role='combobox']"));
 
-        System.out.println("Receiver found!");
-
+        //enter an invalid email
+        System.out.println("recipient found!");
         receiver.sendKeys(Invalid_GMAIL);
-        System.out.println("Receiver sent!");
+        System.out.println("recipient sent!");
 
-        wait.until(ExpectedConditions.textToBePresentInElementValue(receiver, RECEIVER));
-        System.out.println("Receiver Specified!");
+        //verify that the recipient email has been entered
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.textToBePresentInElementValue(receiver, RECIPIENT));
+        System.out.println("recipient specified!");
 
         System.out.println("Attempting to specify the subject.. ");
         WebElement subject = (wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@name='subjectbox'][@placeholder='Subject']"))));
         System.out.println("Subject found!");
 
+        //enter the subject of the email
         subject.sendKeys(SUBJECT);
         System.out.println("Subject sent!");
 
+        //verify that the subject of the email has been entered
         wait.until(ExpectedConditions.textToBePresentInElementValue(subject, SUBJECT));
         System.out.println("Subject Specified!\n");
     }
@@ -140,10 +144,14 @@ public class StepDefinitions {
         pressAttachFileButtonAndSelectAnImage();
     }
 
+    /*
+     * To upload an image, first click on the "attach" button, then use the keys from the keyboard
+     * to select a image and upload it using the ENTER key
+     *
+     * */
     @When("I press \"attach files\" and select an image and I press \"open\"")
     public void pressAttachFileButtonAndSelectAnImage() throws Throwable {
         System.out.println("Attempting to upload a image ... ");
-
         WebElement attachFileBtn = driver.findElement(By.xpath("//div[@class='a1 aaA aMZ']"));
         attachFileBtn.click();
         System.out.println("File system window popped up! ");
@@ -157,9 +165,13 @@ public class StepDefinitions {
             robot.keyRelease(KeyEvent.VK_META);
             first = false;
         }
+
+        //A pre-existing image is named with "img.png". This image can be selected by pressing the "I" key
+        //on the keyboard
         robot.keyPress(KeyEvent.VK_I);
         robot.keyRelease(KeyEvent.VK_I);
 
+        //Press the enter key to upload a file
         robot.keyPress(KeyEvent.VK_ENTER);
         robot.keyRelease(KeyEvent.VK_ENTER);
         Thread.sleep(2000);
@@ -183,9 +195,13 @@ public class StepDefinitions {
             robot.keyRelease(KeyEvent.VK_META);
             first = false;
         }
-        robot.keyPress(KeyEvent.VK_I);
-        robot.keyRelease(KeyEvent.VK_I);
 
+        //A pre-existing regular file is named with "file.txt". This file can be selected by pressing the "F" key
+        //on the keyboard
+        robot.keyPress(KeyEvent.VK_F);
+        robot.keyRelease(KeyEvent.VK_F);
+
+        //Press the enter key to upload a file
         robot.keyPress(KeyEvent.VK_ENTER);
         robot.keyRelease(KeyEvent.VK_ENTER);
         Thread.sleep(2000);
@@ -208,25 +224,25 @@ public class StepDefinitions {
 
     @And("^I press \"Send\"$")
     public void pressSend() throws Throwable {
-        try {
-            System.out.println("Attempting to find the send button...");
-            Robot robot = new Robot();
-            robot.keyPress(KeyEvent.VK_TAB);
-            robot.keyRelease(KeyEvent.VK_TAB);
-            robot.keyPress(KeyEvent.VK_ENTER);
-            robot.keyRelease(KeyEvent.VK_ENTER
-            );
-            System.out.println("Send button found!");
-            System.out.println("Clicking send button");
-        } catch (Exception e) {
-            System.out.println("No send button present\n");
-        }
+        System.out.println("Attempting to find the send button...");
+
+        //The send button can be selected by pressing the TAB key on the keyboard.
+        Robot robot = new Robot();
+        robot.keyPress(KeyEvent.VK_TAB);
+        robot.keyRelease(KeyEvent.VK_TAB);
+        System.out.println("Clicking send button");
+        robot.keyPress(KeyEvent.VK_ENTER);
+        robot.keyRelease(KeyEvent.VK_ENTER);
     }
 
+    //Then
+
+    // This is the method to confirm that the email was actually sent.
     @Then("^the email should be sent to the recipient with the image attachment$")
     public void emailBeSentWithImageAttachment() throws Throwable {
         System.out.println("Waiting for email confirmation appears...");
 
+        //If the view message button appears, then the email has been sent
         WebElement viewMessage = (new WebDriverWait(driver, 20))
                 .until(ExpectedConditions.elementToBeClickable(By.id(VIEW_MESSAGE)));
         System.out.print("Email confirmation appears!\n");
@@ -271,10 +287,17 @@ public class StepDefinitions {
     }
 
     // Helper functions
+
+    /* This is the method to ensure the system is returned to the initial state after tests are run
+     * The initial state can be reached using the user_url
+     */
     private void returnToInitialState() {
         goTo(USER_URL);
     }
 
+    /* This is the method to check the system is in the appropriate initial state after tests are run
+     * The system is in the initial state if the user can compose another email by clicking the compose button
+     */
     private void assertInInitialState() {
         //check if the user can compose another message by validating the existence of the compose button
         Assert.assertTrue(driver.findElements(By.xpath("//div[@role='button'][@tabindex='0'][@gh='cm']")).size() > 0);
