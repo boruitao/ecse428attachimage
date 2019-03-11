@@ -6,7 +6,7 @@ Feature: Send email with image attachment
     And I am on the "compose new message" page with the recipient email and subject specified
     When I press "attach files" and select an image and I press "open"
     And I press "Send"
-    Then the email should be sent to the receiver with the image attachment
+    Then the email should be sent to the recipient with the image attachment
 
   #Alternative flow
   Scenario: Send the email after adding more than one image attachment
@@ -15,7 +15,7 @@ Feature: Send email with image attachment
     And I have an image attachment in the email
     When I press "attach files" and select an image and I press "open"
     And I press "Send"
-    Then the email should be sent to the receiver with both image attachments
+    Then the email should be sent to the recipient with both image attachments
 
   #Error flow
   Scenario: Send the email after removing the previously added image attachment
@@ -24,12 +24,12 @@ Feature: Send email with image attachment
     And I have an image attachment in the email
     When I press the remove button
     And I press "Send"
-    Then the email should be sent to the receiver without the image attachment
+    Then the email should be sent to the recipient without the image attachment
 
   #Error Flow
   Scenario: Send the email to an invalid address after adding an image attachment
     Given I am a user with an existing account
-    And I am on the “compose new message” page with the recipient email and subject specified, but the receiver is invalid.
+    And I am on the "compose new message" page with the recipient email and subject specified, but the recipient email is invalid
     When I press "attach files" and select an image and I press "open"
     And I press "Send"
     Then an error dialog should be popped up indicating that the email address is invalid
@@ -40,5 +40,5 @@ Feature: Send email with image attachment
     And I am on the "compose new message" page with the recipient email and subject specified
     When I press "attach files" and select a regular file and I press "open"
     And I press "Send"
-    Then the email should be sent to the receiver with the regular file attachment
+    Then the email should be sent to the recipient with the regular file attachment
 

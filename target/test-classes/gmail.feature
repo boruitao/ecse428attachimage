@@ -1,17 +1,44 @@
 Feature: Send email with image attachment
 
   #Normal flow
-  Scenario Outline: Send the email after adding an image attachment
+  Scenario: Send the email after adding an image attachment
     Given I am a user with an existing account
-    And I am on the "compose new message" page with the recipient email <recipient> and subject specified
-    When I press "attach files" and select an image <image> and I press "open"
+    And I am on the "compose new message" page with the recipient email and subject specified
+    When I press "attach files" and select an image and I press "open"
     And I press "Send"
-    Then the email should be sent to the receiver with the image attachment
+    Then the email should be sent to the recipient with the image attachment
 
-    Examples:
-      | recipient                 | image    |
-      | borui.tao@mail.mcgill.ca  | img1.png |
-      | borui.tao@gmail.com       | img2.png |
-      | tbrtree@126.com           | img3.png |
-      | 346394775@qq.com          | img4.png |
-      | barry.angela111@gmail.com | img5.png |
+  #Alternative flow
+  Scenario: Send the email after adding more than one image attachment
+    Given I am a user with an existing account
+    And I am on the "compose new message" page with the recipient email and subject specified
+    And I have an image attachment in the email
+    When I press "attach files" and select an image and I press "open"
+    And I press "Send"
+    Then the email should be sent to the recipient with both image attachments
+
+  #Error flow
+  Scenario: Send the email after removing the previously added image attachment
+    Given I am a user with an existing account
+    And I am on the "compose new message" page with the recipient email and subject specified
+    And I have an image attachment in the email
+    When I press the remove button
+    And I press "Send"
+    Then the email should be sent to the recipient without the image attachment
+
+  #Error Flow
+  Scenario: Send the email to an invalid address after adding an image attachment
+    Given I am a user with an existing account
+    And I am on the “compose new message” page with the recipient email and subject specified, but the recipient email is invalid
+    When I press "attach files" and select an image and I press "open"
+    And I press "Send"
+    Then an error dialog should be popped up indicating that the email address is invalid
+
+  #Error Flow:
+  Scenario: Send the email after adding a regular file attachment
+    Given I am a user with an existing account
+    And I am on the "compose new message" page with the recipient email and subject specified
+    When I press "attach files" and select a regular file and I press "open"
+    And I press "Send"
+    Then the email should be sent to the recipient with the regular file attachment
+
